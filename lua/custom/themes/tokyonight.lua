@@ -1,12 +1,11 @@
 return {
-  'navarasu/onedark.nvim',
+  'folke/tokyonight.nvim',
   lazy = true,
   priority = 1000,
   opts = {
-    style = 'deep',
     transparent = true,
   },
   init = function()
-    -- vim.cmd.colorscheme 'onedark'
+    -- vim.cmd.colorscheme 'tokyonight-moon'
   end,
 }

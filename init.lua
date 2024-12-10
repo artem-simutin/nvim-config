@@ -101,6 +101,28 @@ vim.opt.rtp:prepend(lazypath)
 
 -- [[ Configure and install plugins ]]
 require('lazy').setup({
+  -- 'MunifTanjim/nui.nvim',
+  --
+  {
+    'folke/noice.nvim',
+    event = 'VeryLazy',
+    opts = {
+      -- add any options here
+    },
+    dependencies = {
+      -- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
+      'MunifTanjim/nui.nvim',
+      -- OPTIONAL:
+      --   `nvim-notify` is only needed, if you want to use the notification view.
+      --   If not available, we use `mini` as the fallback
+      'rcarriga/nvim-notify',
+    },
+    init = function()
+      require('notify').setup {
+        background_colour = '#000000', -- Set to your desired color
+      }
+    end,
+  },
   {
     'lewis6991/gitsigns.nvim',
     opts = {
@@ -113,7 +135,6 @@ require('lazy').setup({
       },
     },
   },
-
   {
     'folke/which-key.nvim',
     event = 'VimEnter',
@@ -182,6 +203,36 @@ require('lazy').setup({
     },
     config = function()
       require('telescope').setup {
+        defaults = {
+          sorting_strategy = 'ascending',
+          layout_strategy = 'flex',
+          layout_config = {
+            horizontal = { preview_cutoff = 80, preview_width = 0.55 },
+            vertical = { mirror = true, preview_cutoff = 25 },
+            prompt_position = 'top',
+            width = 0.87,
+            height = 0.80,
+          },
+          mappings = {
+            i = {
+              -- To close buffers you don't want to see
+              ['<C-d>'] = 'delete_buffer',
+            },
+          },
+        },
+        pickers = {
+          buffers = {
+            sort_lastused = true,
+            ignore_current_buffer = true, -- Ignore the current buffer
+            show_all_buffers = false, -- Don't show all buffers
+            previewer = true,
+            mappings = {
+              i = {
+                ['<c-x>'] = 'delete_buffer', -- Map Ctrl-x to delete the selected buffer
+              },
+            },
+          },
+        },
         extensions = {
           ['ui-select'] = {
             require('telescope.themes').get_dropdown(),
@@ -193,6 +244,7 @@ require('lazy').setup({
       pcall(require('telescope').load_extension, 'ui-select')
 
       local builtin = require 'telescope.builtin'
+
       vim.keymap.set('n', '<leader>sh', builtin.help_tags, { desc = '[S]earch [H]elp' })
       vim.keymap.set('n', '<leader>sk', builtin.keymaps, { desc = '[S]earch [K]eymaps' })
       vim.keymap.set('n', '<leader>sf', builtin.find_files, { desc = '[S]earch [F]iles' })
@@ -305,6 +357,7 @@ require('lazy').setup({
         gopls = {},
         pyright = {},
         rust_analyzer = {},
+        tailwindcss = {},
         ts_ls = {
           settings = {
             typescript = {
@@ -392,6 +445,7 @@ require('lazy').setup({
       formatters_by_ft = {
         lua = { 'stylua' },
         go = { 'gofmt' },
+        css = { 'prettierd', 'prettier', stop_after_first = true },
         javascript = { 'prettierd', 'prettier', stop_after_first = true },
         typescript = { 'prettierd', 'prettier', stop_after_first = true },
         typescriptreact = { 'prettierd', 'prettier', stop_after_first = true },
@@ -467,7 +521,7 @@ require('lazy').setup({
                 return vim_item
               end
             end
-            return require('lspkind').cmp_format { with_text = false }(entry, vim_item)
+            return require('lspkind').cmp_format { with_text = true }(entry, vim_item)
           end,
         },
         window = {
@@ -542,7 +596,7 @@ require('lazy').setup({
   },
   -- require 'kickstart.plugins.debug',
   -- require 'kickstart.plugins.indent_line',
-  -- require 'kickstart.plugins.lint',
+  require 'kickstart.plugins.lint',
   require 'kickstart.plugins.autopairs',
   -- require 'kickstart.plugins.neo-tree',
   -- require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
