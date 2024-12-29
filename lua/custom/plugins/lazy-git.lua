@@ -6,6 +6,8 @@ return {
       ':LazyGit<Return>',
       silent = true,
       noremap = true,
+      desc = 'Open Lazy[G]it client',
+      group = '[L]azy',
     },
   },
   -- optional for floating window border decoration

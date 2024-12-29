@@ -65,6 +65,24 @@ vim.opt.scrolloff = 14
 -- [[ Basic Keymaps ]]
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
+-- Normal mode: Ctrl+S to save
+vim.keymap.set('n', '<C-s>', ':w<CR>', { noremap = true, silent = true })
+
+-- Insert mode: Ctrl+S to save
+vim.keymap.set('i', '<C-s>', '<Esc>:w<CR>a', { noremap = true, silent = true })
+
+-- Bind P to paste from the system clipboard
+vim.keymap.set('n', 'P', '"+p', { noremap = true })
+vim.keymap.set('v', 'P', '"+p', { noremap = true })
+
+-- Bind Y to yank to the system clipboard
+vim.keymap.set('n', 'Y', '"+y', { noremap = true })
+vim.keymap.set('v', 'Y', '"+y', { noremap = true })
+
+-- Bind D to delete to the system clipboard
+vim.keymap.set('n', 'D', '"+d', { noremap = true })
+vim.keymap.set('v', 'D', '"+d', { noremap = true })
+
 vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Show diagnostic [E]rror messages' })
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
 
@@ -103,6 +121,7 @@ vim.opt.rtp:prepend(lazypath)
 require('lazy').setup({
   -- 'MunifTanjim/nui.nvim',
   --
+  'b0o/schemastore.nvim',
   {
     'folke/noice.nvim',
     event = 'VeryLazy',
@@ -180,6 +199,7 @@ require('lazy').setup({
         { '<leader>s', group = '[S]earch' },
         { '<leader>w', group = '[W]orkspace' },
         { '<leader>t', group = '[T]oggle' },
+        { '<leader>l', group = '[L]azy' },
         { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } },
       },
     },
@@ -394,6 +414,21 @@ require('lazy').setup({
             },
           },
         },
+        jsonls = {
+          settings = {
+            json = {
+              schemas = require('schemastore').json.schemas(),
+              validate = { enable = true }, -- Enable JSON validation
+            },
+          },
+        },
+        yamlls = {
+          settings = {
+            yaml = {
+              schemas = require('schemastore').yaml.schemas(),
+            },
+          },
+        },
       }
       require('mason').setup()
       local ensure_installed = vim.tbl_keys(servers or {})
@@ -450,6 +485,7 @@ require('lazy').setup({
         typescript = { 'prettierd', 'prettier', stop_after_first = true },
         typescriptreact = { 'prettierd', 'prettier', stop_after_first = true },
         javascriptreact = { 'prettierd', 'prettier', stop_after_first = true },
+        json = { 'prettierd', 'prettier', stop_after_first = true },
       },
     },
   },
@@ -552,14 +588,6 @@ require('lazy').setup({
     lazy = true,
     event = 'VeryLazy',
   },
-  -- {
-  --   'folke/tokyonight.nvim',
-  --   priority = 1000, -- Make sure to load this before all the other start plugins.
-  --   init = function()
-  --     vim.cmd.colorscheme 'tokyonight-night'
-  --     vim.cmd.hi 'Comment gui=none'
-  --   end,
-  -- },
   { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
   {
     'echasnovski/mini.nvim',
@@ -622,6 +650,13 @@ require('lazy').setup({
       lazy = '💤 ',
     },
   },
+})
+
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = { 'typescriptreact', 'javascriptreact' },
+  callback = function()
+    vim.bo.commentstring = '{/* %s */}'
+  end,
 })
 
 -- The line beneath this is called `modeline`. See `:help modeline`
