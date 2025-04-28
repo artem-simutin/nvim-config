@@ -1,13 +1,9 @@
-return {}
--- return {
---   'navarasu/onedark.nvim',
---   lazy = true,
---   priority = 1000,
---   opts = {
---     style = 'deep',
---     transparent = true,
---   },
---   init = function()
---     vim.cmd.colorscheme 'onedark'
---   end,
--- }
+return {
+  'navarasu/onedark.nvim',
+  lazy = true,
+  priority = 1000,
+  opts = {
+    style = 'deep',
+    -- transparent = true,
+  },
+}

@@ -1,17 +1,14 @@
 return {
   'folke/tokyonight.nvim',
-  lazy = true,
+  lazy = false,
   priority = 1000,
   opts = {
     style = 'night', -- You can use "storm", "night", or "day"
-    transparent = true,
+    transparent = false,
     terminal_colors = true, -- Set terminal colors to match the theme
     styles = {
-      sidebars = 'transparent', -- Make sidebars transparent
-      floats = 'transparent', -- Make floating windows transparent
+      sidebars = 'dark', -- Make sidebars dark
+      floats = 'dark', -- Make floating windows dark
     },
   },
-  init = function()
-    vim.cmd.colorscheme 'tokyonight-night'
-  end,
 }

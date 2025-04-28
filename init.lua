@@ -11,9 +11,10 @@
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 vim.opt.backup = false
+vim.opt.laststatus = 3
 
-vim.opt.tabstop = 4 -- Number of visual spaces per TAB
-vim.opt.shiftwidth = 4 -- Number of spaces to use for autoindent
+vim.opt.tabstop = 2 -- Number of visual spaces per TAB
+vim.opt.shiftwidth = 2 -- Number of spaces to use for autoindent
 vim.opt.expandtab = true -- Convert tabs to spaces
 vim.opt.autoindent = true -- Copy indent from current line when starting a new line
 vim.opt.smartindent = true -- Makes indenting smart
@@ -62,8 +63,12 @@ vim.opt.cursorline = true
 
 vim.opt.scrolloff = 14
 
+vim.opt.shortmess:append 'W'
+vim.opt.shortmess:append 'IWs'
+
 -- [[ Basic Keymaps ]]
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
+vim.api.nvim_set_keymap('i', 'jk', '<Esc>', { noremap = true, silent = true })
 
 -- Normal mode: Ctrl+S to save
 vim.keymap.set('n', '<C-s>', ':w<CR>', { noremap = true, silent = true })
@@ -139,6 +144,18 @@ require('lazy').setup({
     init = function()
       require('notify').setup {
         background_colour = '#000000', -- Set to your desired color
+        filter = {
+          event = 'msg_show',
+          any = {
+            { find = '%d+L, %d+B' },
+            { find = '; after #%d+' },
+            { find = '; before #%d+' },
+            { find = '%d fewer lines' },
+            { find = '%d more lines' },
+          },
+        },
+        render = 'compact',
+        opts = { skip = true },
       }
     end,
   },
@@ -252,6 +269,9 @@ require('lazy').setup({
               },
             },
           },
+          colorscheme = {
+            enable_preview = true,
+          },
         },
         extensions = {
           ['ui-select'] = {
@@ -275,6 +295,7 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' })
       vim.keymap.set('n', '<leader>s.', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
       vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[ ] Find existing buffers' })
+      vim.keymap.set('n', '<leader>st', builtin.colorscheme, { desc = '[S]earch [T]hemes' })
 
       vim.keymap.set('n', '<leader>/', function()
         builtin.current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
@@ -376,6 +397,8 @@ require('lazy').setup({
       local servers = {
         gopls = {},
         pyright = {},
+        ruff = {},
+        mypy = {},
         rust_analyzer = {},
         tailwindcss = {},
         ts_ls = {
@@ -447,7 +470,6 @@ require('lazy').setup({
       }
     end,
   },
-
   {
     'stevearc/conform.nvim',
     event = { 'BufWritePre' },
@@ -486,6 +508,7 @@ require('lazy').setup({
         typescriptreact = { 'prettierd', 'prettier', stop_after_first = true },
         javascriptreact = { 'prettierd', 'prettier', stop_after_first = true },
         json = { 'prettierd', 'prettier', stop_after_first = true },
+        rust = { 'rustfmt', stop_after_first = true },
       },
     },
   },
@@ -550,7 +573,7 @@ require('lazy').setup({
         formatting = {
           format = function(entry, vim_item)
             if vim.tbl_contains({ 'path' }, entry.source.name) then
-              local icon, hl_group = require('nvim-web-devicons').get_icon(entry:get_completion_item().label)
+              local icon, hl_group = require('nvim-web-devicons').get_icon(entry.completion_item.label)
               if icon then
                 vim_item.kind = icon
                 vim_item.kind_hl_group = hl_group
@@ -607,7 +630,7 @@ require('lazy').setup({
     build = ':TSUpdate',
     main = 'nvim-treesitter.configs', -- Sets main module to use for opts
     opts = {
-      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' },
+      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc', 'python' },
       auto_install = true,
       highlight = {
         enable = true,
@@ -621,6 +644,14 @@ require('lazy').setup({
     --    - Incremental selection: Included, see `:help nvim-treesitter-incremental-selection-mod`
     --    - Show your current context: https://github.com/nvim-treesitter/nvim-treesitter-context
     --    - Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
+  },
+  {
+    'lcroberts/persistent-colorscheme.nvim',
+    lazy = false,
+    priority = 1000, -- Plugin should be loaded early
+    opts = {
+      colorscheme = 'onedark',
+    },
   },
   -- require 'kickstart.plugins.debug',
   -- require 'kickstart.plugins.indent_line',
@@ -650,13 +681,6 @@ require('lazy').setup({
       lazy = '💤 ',
     },
   },
-})
-
-vim.api.nvim_create_autocmd('FileType', {
-  pattern = { 'typescriptreact', 'javascriptreact' },
-  callback = function()
-    vim.bo.commentstring = '{/* %s */}'
-  end,
 })
 
 -- The line beneath this is called `modeline`. See `:help modeline`

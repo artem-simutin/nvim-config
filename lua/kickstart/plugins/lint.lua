@@ -19,6 +19,7 @@ return {
         javascript = { 'eslint' },
         typescriptreact = { 'eslint' },
         javascriptreact = { 'eslint' },
+        python = { 'mypy', 'ruff' },
       }
       --
       -- You can disable the default linters by setting their filetypes to nil:
